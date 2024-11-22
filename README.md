@@ -49,7 +49,7 @@ We welcome community contributions! To contribute:
 ---
 
 ## Support
-For issues, questions, or feedback, please submit an issue in the [GitHub repository](https://github.com/sweety-2110/jenkinsScan) or contact the plugin maintainers.
+For issues, questions, or feedback, please submit an issue in the [GitHub repository](https://github.com/productteam-was/indusface-was-scan) or contact the plugin maintainers.
 
 ---
 
