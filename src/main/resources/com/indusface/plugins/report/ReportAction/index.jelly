@@ -152,12 +152,19 @@
                         <div class="card">
                             <div class="card-header">Build Status Configuration</div>
                             <div class="card-body">
+                            <j:choose>
+                                <j:when test="${it.scanReportData().getBuildStatusConfig().size() > 0}">
                                 <j:forEach var="buildConfig" items="${it.scanReportData().getBuildStatusConfig()}">
                                     <p><b>Severity:</b> ${buildConfig.getSeverity()}</p>
                                     <p><b>Vulnerabilities Found:</b> ${buildConfig.getFoundVulns()}</p>
                                     <p><b>Threshold Limit:</b> ${buildConfig.getThresholdLimit()}</p>
                                     <p><b>Above Threshold:</b> ${buildConfig.getIsAboveThreshold()}</p>
                                 </j:forEach>
+                                 </j:when>
+                                <j:otherwise>
+         						   <p>Build Status not found.</p>
+    						    </j:otherwise>
+                          </j:choose>
                             </div>
                         </div>
 						</div>

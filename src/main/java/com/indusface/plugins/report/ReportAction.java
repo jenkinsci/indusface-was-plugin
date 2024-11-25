@@ -1,8 +1,5 @@
 package com.indusface.plugins.report;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.indusface.plugins.httpclient.HttpClientProvider;
 import com.indusface.plugins.wasscan.ScanAndBuildStatus;
 import com.indusface.plugins.wasscan.ScanApiResponse;
@@ -17,6 +14,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * The ReportAction class is responsible for fetching and parsing scan reports
@@ -94,8 +93,8 @@ public class ReportAction implements Action {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
                 if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-                    JsonObject jsonObject =
-                            JsonParser.parseString(response.body()).getAsJsonObject();
+
+                    JSONObject jsonObject = JSONObject.fromObject(response.body());
                     sr = parseScanData(jsonObject);
                     sr.setJobStatus(jobStatus);
 
@@ -131,11 +130,10 @@ public class ReportAction implements Action {
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-            JsonObject jsonObject = JsonParser.parseString(response.body()).getAsJsonObject();
+            JSONObject jsonObject = JSONObject.fromObject(response.body());
             logger.info("jsonObject :" + jsonObject);
-            scanStatus = jsonObject.getAsJsonObject("result").get("scanStatus").getAsString();
-            buildStatus =
-                    jsonObject.getAsJsonObject("result").get("buildStatus").getAsString();
+            scanStatus = jsonObject.getJSONObject("result").get("scanStatus").toString();
+            buildStatus = jsonObject.getJSONObject("result").get("buildStatus").toString();
             scanApiResponse.setBuildStatus(buildStatus);
             scanApiResponse.setScanStatus(scanStatus);
         } else {
@@ -149,8 +147,8 @@ public class ReportAction implements Action {
         if (secretKey == null) {
             throw new IllegalStateException("SECRET_KEY is null");
         }
-        JsonObject json = new JsonObject();
-        json.addProperty("secret_key", secretKey);
+        JSONObject json = new JSONObject();
+        json.put("secret_key", secretKey);
 
         // Convert the JSON object to a string
         return json.toString();
@@ -162,63 +160,62 @@ public class ReportAction implements Action {
      * @param jsonObject the JSON object containing the scan data
      * @return the parsed scan data as a ScanReport object
      */
-    private ScanReport parseScanData(JsonObject jsonObject) {
+    private ScanReport parseScanData(JSONObject jsonObject) {
         ScanReport scanReport = new ScanReport();
 
-        JsonObject result = jsonObject.getAsJsonObject("result");
+        JSONObject result = jsonObject.getJSONObject("result");
 
-        scanReport.setScanLogId(result.get("scanlogid").getAsLong());
-        scanReport.setUrl(result.get("url").getAsString());
-        scanReport.setStartTime(result.get("startTime").getAsString());
-        scanReport.setEndTime(result.get("endTime").getAsString());
-        scanReport.setScanMinutes(result.get("scanminutes").getAsInt());
-        scanReport.setScanReportUrl(result.get("scanReport").getAsString());
-        scanReport.setTotalVulnerabilities(result.get("totalVulnerabilities").getAsInt());
-        scanReport.setScanStatus(result.get("scanStatus").getAsString());
-        scanReport.setBuildStatus(result.get("buildStatus").getAsString());
+        scanReport.setScanLogId(result.getLong("scanlogid"));
+        scanReport.setUrl(result.get("url").toString());
+        scanReport.setStartTime(result.get("startTime").toString());
+        scanReport.setEndTime(result.get("endTime").toString());
+        scanReport.setScanMinutes(result.getInt("scanminutes"));
+        scanReport.setScanReportUrl(result.get("scanReport").toString());
+        scanReport.setTotalVulnerabilities(result.getInt("totalVulnerabilities"));
+        scanReport.setScanStatus(result.get("scanStatus").toString());
+        scanReport.setBuildStatus(result.get("buildStatus").toString());
 
         // Parsing SeverityWiseVulns
-        JsonObject severityWiseVulnsJson = result.getAsJsonObject("severityWiseVulns");
+        JSONObject severityWiseVulnsJson = result.getJSONObject("severityWiseVulns");
         SeverityWiseVulns severityWiseVulns = new SeverityWiseVulns();
-        severityWiseVulns.setCritical(severityWiseVulnsJson.get("critical").getAsInt());
-        severityWiseVulns.setHigh(severityWiseVulnsJson.get("high").getAsInt());
-        severityWiseVulns.setMedium(severityWiseVulnsJson.get("medium").getAsInt());
-        severityWiseVulns.setLow(severityWiseVulnsJson.get("low").getAsInt());
-        severityWiseVulns.setInfo(severityWiseVulnsJson.get("info").getAsInt());
+        severityWiseVulns.setCritical(severityWiseVulnsJson.getInt("critical"));
+        severityWiseVulns.setHigh(severityWiseVulnsJson.getInt("high"));
+        severityWiseVulns.setMedium(severityWiseVulnsJson.getInt("medium"));
+        severityWiseVulns.setLow(severityWiseVulnsJson.getInt("low"));
+        severityWiseVulns.setInfo(severityWiseVulnsJson.getInt("info"));
         scanReport.setSeverityWiseVulns(severityWiseVulns);
 
         // Parsing BuildStatusConfig
-        JsonArray buildStatusArray = result.getAsJsonArray("buildStatusConfig");
+        JSONArray buildStatusArray = result.getJSONArray("buildStatusConfig");
         List<BuildStatusConfig> buildStatusConfigList = new ArrayList<>();
         for (int i = 0; i < buildStatusArray.size(); i++) {
-            JsonObject buildStatusConfigJson = buildStatusArray.get(i).getAsJsonObject();
+            JSONObject buildStatusConfigJson = (JSONObject) buildStatusArray.get(i);
             BuildStatusConfig buildStatusConfig = new BuildStatusConfig();
-            buildStatusConfig.setSeverity(buildStatusConfigJson.get("severity").getAsString());
-            buildStatusConfig.setFoundVulns(
-                    buildStatusConfigJson.get("found_vulns").getAsInt());
-            buildStatusConfig.setThresholdLimit(
-                    buildStatusConfigJson.get("threshold_limit").getAsInt());
+            buildStatusConfig.setSeverity(buildStatusConfigJson.get("severity").toString());
+            buildStatusConfig.setFoundVulns(buildStatusConfigJson.getInt("found_vulns"));
+            buildStatusConfig.setThresholdLimit(buildStatusConfigJson.getInt("threshold_limit"));
             buildStatusConfig.setIsAboveThreshold(
-                    buildStatusConfigJson.get("is_above_threshold").getAsString());
+                    buildStatusConfigJson.get("is_above_threshold").toString());
             buildStatusConfigList.add(buildStatusConfig);
         }
         scanReport.setBuildStatusConfig(buildStatusConfigList);
 
-        // Parsing Vulnerabilities
-        JsonArray vulnerabilitiesArray = result.getAsJsonArray("vulnerabilities");
+        JSONArray vulnerabilitiesArray = result.getJSONArray("vulnerabilities");
+
         List<Vulnerability> vulnerabilityList = new ArrayList<>();
+
         for (int i = 0; i < vulnerabilitiesArray.size(); i++) {
-            JsonObject vulnerabilityJson = vulnerabilitiesArray.get(i).getAsJsonObject();
+            JSONObject vulnerabilityJson = vulnerabilitiesArray.getJSONObject(i);
             Vulnerability vulnerability = new Vulnerability();
-            vulnerability.setUniqueId(vulnerabilityJson.get("uniqueid").getAsLong());
-            vulnerability.setTitle(vulnerabilityJson.get("title").getAsString());
-            vulnerability.setSeverity(vulnerabilityJson.get("severity").getAsString());
-            vulnerability.setCvssScore(vulnerabilityJson.get("cvssScore").getAsString());
-            vulnerability.setOpenStatus(vulnerabilityJson.get("openStatus").getAsString());
-            vulnerability.setFoundOn(vulnerabilityJson.get("foundOn").getAsString());
-            vulnerability.setFoundDate(vulnerabilityJson.get("foundDate").getAsString());
-            vulnerability.setDescription(vulnerabilityJson.get("description").getAsString());
-            vulnerability.setSolution(vulnerabilityJson.get("solution").getAsString());
+            vulnerability.setUniqueId(vulnerabilityJson.getLong("uniqueid"));
+            vulnerability.setTitle(vulnerabilityJson.get("title").toString());
+            vulnerability.setSeverity(vulnerabilityJson.get("severity").toString());
+            vulnerability.setCvssScore(vulnerabilityJson.get("cvssScore").toString());
+            vulnerability.setOpenStatus(vulnerabilityJson.get("openStatus").toString());
+            vulnerability.setFoundOn(vulnerabilityJson.get("foundOn").toString());
+            vulnerability.setFoundDate(vulnerabilityJson.get("foundDate").toString());
+            vulnerability.setDescription(vulnerabilityJson.get("description").toString());
+            vulnerability.setSolution(vulnerabilityJson.get("solution").toString());
             vulnerabilityList.add(vulnerability);
         }
         scanReport.setVulnerabilities(vulnerabilityList);
