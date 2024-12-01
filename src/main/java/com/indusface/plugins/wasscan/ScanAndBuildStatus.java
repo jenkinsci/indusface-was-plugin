@@ -1,15 +1,16 @@
 package com.indusface.plugins.wasscan;
 
 import hudson.model.InvisibleAction;
+import hudson.util.Secret;
 
 public class ScanAndBuildStatus extends InvisibleAction {
     private final String scanId;
-    private final String secretKey;
+    private final Secret secretKey;
     private String buildStatus;
 
     public ScanAndBuildStatus(String scanId, String secretKey, String buildStatus) {
         this.scanId = scanId;
-        this.secretKey = secretKey;
+        this.secretKey = Secret.fromString(secretKey);
         this.buildStatus = buildStatus;
     }
 
@@ -18,7 +19,7 @@ public class ScanAndBuildStatus extends InvisibleAction {
     }
 
     public String getSecretKey() {
-        return secretKey;
+        return Secret.toString(secretKey);
     }
 
     public String getBuildStatus() {
