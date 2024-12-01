@@ -14,6 +14,7 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
+import hudson.util.Secret;
 import java.io.IOException;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
@@ -26,7 +27,7 @@ import org.kohsuke.stapler.DataBoundSetter;
  */
 public class SamplePostBuildAction extends Notifier implements SimpleBuildStep {
 
-    private String accessKey;
+    private Secret accessKey;
     private String buildName;
 
     /**
@@ -37,7 +38,7 @@ public class SamplePostBuildAction extends Notifier implements SimpleBuildStep {
      */
     @DataBoundConstructor
     public SamplePostBuildAction(String accessKey, String buildName) {
-        this.accessKey = accessKey;
+        this.accessKey = Secret.fromString(accessKey);
         this.buildName = buildName;
     }
 
@@ -47,7 +48,7 @@ public class SamplePostBuildAction extends Notifier implements SimpleBuildStep {
      * @return the access key
      */
     public String getAccessKey() {
-        return accessKey;
+        return Secret.toString(accessKey);
     }
 
     /**
@@ -57,7 +58,7 @@ public class SamplePostBuildAction extends Notifier implements SimpleBuildStep {
      */
     @DataBoundSetter
     public void setAccessKey(String accessKey) {
-        this.accessKey = accessKey;
+        this.accessKey = Secret.fromString(accessKey);
     }
 
     /**
@@ -100,7 +101,7 @@ public class SamplePostBuildAction extends Notifier implements SimpleBuildStep {
                 listener.getLogger().println("Access Key: " + accessKey);
 
                 ScanApiLaunch sc = new ScanApiLaunch();
-                boolean isBuildFail = sc.startScan(listener, this.accessKey, run);
+                boolean isBuildFail = sc.startScan(listener, Secret.toString(accessKey), run);
                 //  listener.getLogger().println("isBuildFail: " + isBuildFail);
                 if (isBuildFail) {
                     listener.getLogger().println("Build failed.");
