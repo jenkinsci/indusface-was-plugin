@@ -98,11 +98,8 @@ public class SamplePostBuildAction extends Notifier implements SimpleBuildStep {
             Result result = run.getResult();
             if (result != null && result.equals(Result.SUCCESS)) {
                 listener.getLogger().println("Build was successful! Executing post-build action...");
-                listener.getLogger().println("Access Key: " + accessKey);
-
                 ScanApiLaunch sc = new ScanApiLaunch();
                 boolean isBuildFail = sc.startScan(listener, Secret.toString(accessKey), run);
-                //  listener.getLogger().println("isBuildFail: " + isBuildFail);
                 if (isBuildFail) {
                     listener.getLogger().println("Build failed.");
                     run.setResult(Result.FAILURE);
