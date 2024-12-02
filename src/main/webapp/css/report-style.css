@@ -1,3 +1,4 @@
+/* Card Container */
 .card-container {
     display: flex;
     justify-content: space-between;
@@ -5,8 +6,9 @@
     margin-bottom: 16px;
 }
 
+/* Card Styles */
 .card {
-    flex: 0 0 48%;
+    flex: 0 0 48%; /* Adjust width of cards */
     margin-bottom: 16px;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -15,12 +17,14 @@
     background-color: #f9f9f9;
 }
 
+/* Card Header */
 .card-header {
     font-size: 1.5em;
     margin-bottom: 12px;
     font-weight: bold;
 }
 
+/* Card Body */
 .card-body {
     padding: 8px 0;
 }
@@ -39,11 +43,33 @@
     text-decoration: underline;
 }
 
+/* Responsiveness for Cards */
+@media (max-width: 768px) {
+    .card {
+        flex: 0 0 100%; /* Full width for cards on small screens */
+    }
+}
+
+/* Table Styles */
 .table {
     width: 100%;
     border-collapse: collapse;
 }
 
+.table th:nth-child(4), .table td:nth-child(4) {
+    width: 250px; /* Set width for the fourth column */
+}
+
+.table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.fixed-width {
+    width: 200px;
+}
+
+/* Table Headers and Cells */
 .table th, .table td {
     border: 1px solid #ddd;
     padding: 8px;
@@ -54,11 +80,26 @@
     font-weight: bold;
 }
 
-.alert {
-    padding: 20px;
+/* Alternating Table Row Colors */
+.table tr:nth-child(even) {
     background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+}
+
+.table tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+/* Alert Styles */
+:root {
+    --alert-border-color: #ddd;
+    --alert-border-radius: 8px;
+    --alert-padding: 20px;
+}
+
+.alert {
+    padding: var(--alert-padding);
+    border: 1px solid var(--alert-border-color);
+    border-radius: var(--alert-border-radius);
     margin-bottom: 16px;
 }
 
@@ -74,6 +115,7 @@
     border-color: #faebcc;
 }
 
+/* Button Styles */
 button {
     background-color: #4CAF50;
     color: white;
@@ -85,4 +127,8 @@ button {
 
 button:hover {
     background-color: #45a049;
+}
+
+button:focus {
+    outline: 3px solid #45a049; /* Focus outline for accessibility */
 }

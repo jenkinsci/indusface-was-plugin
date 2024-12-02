@@ -1,8 +1,7 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout">
     <l:layout title="Scan Report">
-        <l:stylesheet href="${resURL}/com/indusface/plugins/report/ReportAction/report-style.css"/>
-       
+    	<link rel="stylesheet" type="text/css" href="${resURL}/plugin/indusface-was/css/report-style.css" />
         <l:main-panel>
             <j:choose>
                 <j:when test="${it.scanReportData().getJobStatus() == 'COMPLETED'}">
