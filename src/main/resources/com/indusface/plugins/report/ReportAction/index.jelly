@@ -82,7 +82,7 @@
                                                 <th class="found-on-column">Found On</th>
                                                 <th>Open Status</th>
                                                 
-                                                <th style="width: 100px;">Found Date</th>
+                                                <th">Found Date</th>
                                                 <th>Description</th>
                                                 <th>Solution</th>
                                             </tr>
@@ -94,7 +94,7 @@
                                                     <td>${vuln.getTitle()}</td>
                                                     <td>${vuln.getSeverity()}</td>
                                                     <td>${vuln.getCvssScore()}</td>
-                                                    <td style="width: 100px;">${vuln.getFoundOn()}</td>
+                                                    <td>${vuln.getFoundOn()}</td>
                                                     <td>${vuln.getOpenStatus()}</td>
                                                     
                                                     <td>${vuln.getFoundDate()}</td>
