@@ -22,22 +22,22 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 /**
- * SamplePostBuildAction is a Jenkins post-build action that performs specific tasks after a build is completed.
+ * WasPostBuildAction is a Jenkins post-build action that performs specific tasks after a build is completed.
  * It extends the Notifier class and implements the SimpleBuildStep interface.
  */
-public class SamplePostBuildAction extends Notifier implements SimpleBuildStep {
+public class WasPostBuildAction extends Notifier implements SimpleBuildStep {
 
     private Secret accessKey;
     private String buildName;
 
     /**
-     * Constructor to initialize the SamplePostBuildAction with the specified access key and build name.
+     * Constructor to initialize the WasPostBuildAction with the specified access key and build name.
      *
      * @param accessKey the access key required for the post-build action
      * @param buildName the name of the build
      */
     @DataBoundConstructor
-    public SamplePostBuildAction(String accessKey, String buildName) {
+    public WasPostBuildAction(String accessKey, String buildName) {
         this.accessKey = Secret.fromString(accessKey);
         this.buildName = buildName;
     }
@@ -98,6 +98,7 @@ public class SamplePostBuildAction extends Notifier implements SimpleBuildStep {
             Result result = run.getResult();
             if (result != null && result.equals(Result.SUCCESS)) {
                 listener.getLogger().println("Build was successful! Executing post-build action...");
+                listener.getLogger().println("Access Key: " + accessKey);
                 ScanApiLaunch sc = new ScanApiLaunch();
                 boolean isBuildFail = sc.startScan(listener, Secret.toString(accessKey), run);
                 if (isBuildFail) {
@@ -168,7 +169,7 @@ public class SamplePostBuildAction extends Notifier implements SimpleBuildStep {
     }
 
     /**
-     * Descriptor for the SamplePostBuildAction.
+     * Descriptor for the WasPostBuildAction.
      */
     @Symbol("wasPostBuildAction")
     @Extension
@@ -178,7 +179,7 @@ public class SamplePostBuildAction extends Notifier implements SimpleBuildStep {
          * Constructor for DescriptorImpl.
          */
         public DescriptorImpl() {
-            super(SamplePostBuildAction.class);
+            super(WasPostBuildAction.class);
         }
 
         /**
