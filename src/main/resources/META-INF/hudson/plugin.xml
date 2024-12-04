@@ -1,4 +1,5 @@
-<plugin>
-    <!-- Plugin icon -->
-    <icon>images/logo.png</icon>
-</plugin>
+<extensionPoints>
+    <hudson.tasks.BuildStep>
+        <className>com.indusface.plugins.wasscan.WasPostBuildAction</className>
+    </hudson.tasks.BuildStep>
+</extensionPoints>
