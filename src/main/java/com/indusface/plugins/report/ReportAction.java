@@ -230,7 +230,7 @@ public class ReportAction implements Action {
 
     @Override
     public String getDisplayName() {
-        return "WAS Scan report";
+        return "WAS Scan Report";
     }
 
     @Override
