@@ -118,6 +118,12 @@
                         <p>Please wait while the scan is being processed.</p>
                     </div>
                 </j:when>
+                <j:when test="${it.scanReportData().getJobStatus() == 'ERROR'}">
+                <div class="alert alert-warning">
+                        <h2>Scan Completed</h2>
+                        <p>Scan Completed Failed to fetch details. Please try After some time</p>
+                    </div>
+                </j:when>
 
                 <!-- Unknown or Not Available Status -->
                 <j:otherwise>

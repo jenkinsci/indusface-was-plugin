@@ -99,6 +99,7 @@ public class ReportAction implements Action {
                     sr.setJobStatus(jobStatus);
 
                 } else {
+                    sr.setJobStatus("ERROR");
                     logger.info("Failed to fetch scan data. HTTP Status: " + response.statusCode());
                 }
             }
@@ -225,7 +226,7 @@ public class ReportAction implements Action {
 
     @Override
     public String getIconFileName() {
-        return "clipboard.png";
+        return "symbol-reader-outline plugin-ionicons-api";
     }
 
     @Override
