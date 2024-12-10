@@ -230,11 +230,11 @@ public class ReportAction implements Action {
 
     @Override
     public String getDisplayName() {
-        return "Build Summary report";
+        return "WAS Scan report";
     }
 
     @Override
     public String getUrlName() {
-        return "SummaryReport.html";
+        return "WasScanReport.html";
     }
 }

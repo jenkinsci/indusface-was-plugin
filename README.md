@@ -1,7 +1,7 @@
-# Jenkins Security Scan Plugin
+# Indusface WAS Scan Plugin
 
 ### Overview
-The Jenkins Security Scan Plugin enhances your Jenkins pipelines with automated security scanning, helping you identify and address vulnerabilities early in the development cycle. By integrating seamlessly into CI/CD workflows, this plugin ensures that security is part of your development process.
+The Indusface WAS Scan Plugin enhances your Jenkins pipelines with automated security scanning, helping you identify and address vulnerabilities early in the development cycle. By integrating seamlessly into CI/CD workflows, this plugin ensures that security is part of your development process.
 
 ### Key Features
 - **Automated Scanning**: Triggers security scans automatically during the build process.
@@ -28,7 +28,7 @@ Enter the web application name and access key required for scanning.
 Once the application build succeeds, the scan will automatically start.
 
 ### 6. Monitor the Scan
-Track the progress and results in the **Scan Status** section based on the pre-configured pass/fail criteria.
+Track the progress and results in the **WAS Scan report** section based on the pre-configured pass/fail criteria.
 
 ---
 

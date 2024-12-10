@@ -1,5 +1,0 @@
-<extensionPoints>
-    <hudson.tasks.BuildStep>
-        <className>com.indusface.plugins.wasscan.WasPostBuildAction</className>
-    </hudson.tasks.BuildStep>
-</extensionPoints>
