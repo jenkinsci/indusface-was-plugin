@@ -102,7 +102,7 @@ public class ReportAction implements Action {
             }
 
         } catch (Exception e) {
-        	sr.setJobStatus("ERROR");
+            sr.setJobStatus("ERROR");
             logger.info("Failed to fetch scan report. " + e.getMessage());
         }
 
