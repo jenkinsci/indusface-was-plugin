@@ -10,7 +10,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -58,8 +57,6 @@ public class ReportAction implements Action {
         } catch (Exception e) {
             logger.info("Exception occurred getScanStatus:" + e.getLocalizedMessage());
         }
-        logger.info(
-                " Status of Scan for AccessKey :" + secretKey + " is :" + status + " at time :" + LocalDateTime.now());
         return status;
     }
 
@@ -105,6 +102,7 @@ public class ReportAction implements Action {
             }
 
         } catch (Exception e) {
+        	sr.setJobStatus("ERROR");
             logger.info("Failed to fetch scan report. " + e.getMessage());
         }
 
@@ -220,7 +218,6 @@ public class ReportAction implements Action {
             vulnerabilityList.add(vulnerability);
         }
         scanReport.setVulnerabilities(vulnerabilityList);
-        logger.info(" scan report : " + scanReport);
         return scanReport;
     }
 
@@ -236,6 +233,6 @@ public class ReportAction implements Action {
 
     @Override
     public String getUrlName() {
-        return "WasScanReport.html";
+        return "WasScanReport";
     }
 }

@@ -1,44 +1,45 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout">
     <l:layout title="Scan Report">
-    	<st:adjunct includes="com.indusface.plugins.report.ReportAction.report-style" />
+                <st:adjunct includes="com.indusface.plugins.report.ReportAction.report-style" />
+        <l:head>
+            <link rel="stylesheet" type="text/css" href="${resURL}/style.css"/>
+        </l:head>
         <l:main-panel>
             <j:choose>
                 <j:when test="${it.scanReportData().getJobStatus() == 'COMPLETED'}">
-                
-                    <h3>Download Report</h3>
-                    <p>
-                    
-                        <a href="${it.scanReportData().getScanReportUrl()}" target="_blank" download="ScanReport.pdf">
-                            <button>Download Report</button>
-                        </a>
-                    </p>
 
-                    <div class="card-container">
-                        <!-- General Information Card -->
-                        <div class="card">
-                            <div class="card-header">General Information</div>
-                            <div class="card-body">
+                    <!-- Download Report Section -->
+                    <div class="jenkins-panel">
+                        <h2><div class="jenkins-panel__header">Download Report</div></h2>
+                        <div class="jenkins-panel__body">
+                            <a href="${it.scanReportData().getScanReportUrl()}" target="_blank" download="ScanReport.pdf">
+                                <button class="jenkins-button jenkins-button--primary">Download Report</button>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Side-by-Side Information Section -->
+                    <div class="flex-container">
+
+                        <!-- General Information Section -->
+                        <div class="jenkins-panel">
+                            <h2><div class="jenkins-panel__header">General Information</div></h2>
+                            <div class="jenkins-panel__body">
                                 <p><b>Scan Log ID:</b> ${it.scanReportData().getScanLogId()}</p>
                                 <p><b>Scan Status:</b> ${it.scanReportData().getScanStatus()}</p>
                                 <p><b>Build Status:</b> ${it.scanReportData().getBuildStatus()}</p>
                                 <p><b>Start Time:</b> ${it.scanReportData().getStartTime()}</p>
                                 <p><b>End Time:</b> ${it.scanReportData().getEndTime()}</p>
-                                <p><b>Report URL:</b> ${it.scanReportData().getScanReportUrl()}</p>
                                 <p><b>Scan Duration (Minutes):</b> ${it.scanReportData().getScanMinutes()}</p>
-                                <p><b>Scan Report URL:</b> 
-                                    <a href="${it.scanReportData().getScanReport().getUrl()}" target="_blank">
-                                        ${it.scanReportData().getUrl()}
-                                    </a>
-                                </p>
                                 <p><b>Total Vulnerabilities:</b> ${it.scanReportData().getTotalVulnerabilities()}</p>
                             </div>
                         </div>
 
-                        <!-- Severity-wise Vulnerabilities Card -->
-                        <div class="card">
-                            <div class="card-header">Severity-wise Vulnerabilities</div>
-                            <div class="card-body">
+                        <!-- Severity-wise Vulnerabilities Section -->
+                        <div class="jenkins-panel">
+                            <h2><div class="jenkins-panel__header">Severity-wise Vulnerabilities</div></h2>
+                            <div class="jenkins-panel__body">
                                 <p><b>Critical:</b> ${it.scanReportData().getSeverityWiseVulns().getCritical()}</p>
                                 <p><b>High:</b> ${it.scanReportData().getSeverityWiseVulns().getHigh()}</p>
                                 <p><b>Medium:</b> ${it.scanReportData().getSeverityWiseVulns().getMedium()}</p>
@@ -46,88 +47,95 @@
                                 <p><b>Info:</b> ${it.scanReportData().getSeverityWiseVulns().getInfo()}</p>
                             </div>
                         </div>
-
+                        
                         <!-- Build Status Configuration Card -->
-                        <div class="card">
-                            <div class="card-header">Build Status Configuration</div>
-                            <div class="card-body">
-                            <j:choose>
-                                <j:when test="${it.scanReportData().getBuildStatusConfig().size() > 0}">
-                                <j:forEach var="buildConfig" items="${it.scanReportData().getBuildStatusConfig()}">
-                                    <p><b>Severity:</b> ${buildConfig.getSeverity()}</p>
-                                    <p><b>Vulnerabilities Found:</b> ${buildConfig.getFoundVulns()}</p>
-                                    <p><b>Threshold Limit:</b> ${buildConfig.getThresholdLimit()}</p>
-                                    <p><b>Above Threshold:</b> ${buildConfig.getIsAboveThreshold()}</p>
-                                </j:forEach>
-                                 </j:when>
-                                <j:otherwise>
-         						   <p>Build Status not found.</p>
-    						    </j:otherwise>
-                          </j:choose>
-                            </div>
-                        </div>
+						<div class="jenkins-panel">
+						    <div class="jenkins-panel__header">Build Status Configuration</div>
+						    <div class="jenkins-panel__body">
+						        <j:choose>
+						            <j:when test="${it.scanReportData().getBuildStatusConfig().size() > 0}">
+						                <j:forEach var="buildConfig" items="${it.scanReportData().getBuildStatusConfig()}">
+						                    <div class="jenkins-card">
+						                        <p><b>Severity:</b> ${buildConfig.getSeverity()}</p>
+						                        <p><b>Vulnerabilities Found:</b> ${buildConfig.getFoundVulns()}</p>
+						                        <p><b>Threshold Limit:</b> ${buildConfig.getThresholdLimit()}</p>
+						                        <p><b>Above Threshold:</b> ${buildConfig.getIsAboveThreshold()}</p>
+						                    </div>
+						                </j:forEach>
+						            </j:when>
+						            <j:otherwise>
+						                <p class="jenkins-notice">Build Status not found.</p>
+						            </j:otherwise>
+						        </j:choose>
+						    </div>
 						</div>
-                        <!-- Vulnerabilities Table -->
-                            <h2>Vulnerabilities</h2>
-                             <j:choose>
-                                <j:when test="${it.scanReportData().getVulnerabilities().size() > 0}">
-                                    <table border="1">
-                                        <thead>
-                                            <tr>
-                                                <th>Unique ID</th>
-                                                <th>Title</th>
-                                                <th>Severity</th>
-                                                <th>CVSS Score</th>
-                                                <th class="found-on-column">Found On</th>
-                                                <th>Open Status</th>
-                                                
-                                                <th>Found Date</th>
-                                                <th>Description</th>
-                                                <th>Solution</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <j:forEach var="vuln" items="${it.scanReportData().getVulnerabilities()}">
-                                                <tr>
-                                                    <td>${vuln.getUniqueId()}</td>
-                                                    <td>${vuln.getTitle()}</td>
-                                                    <td>${vuln.getSeverity()}</td>
-                                                    <td>${vuln.getCvssScore()}</td>
-                                                    <td>${vuln.getFoundOn()}</td>
-                                                    <td>${vuln.getOpenStatus()}</td>
-                                                    
-                                                    <td>${vuln.getFoundDate()}</td>
-                                                    <td>${vuln.getDescription()}</td>
-                                                    <td>${vuln.getSolution()}</td>
-                                                </tr>
-                                            </j:forEach>
-                                        </tbody>
-                                    </table>
-                                </j:when>
-                                <j:otherwise>
-         						   <p>No vulnerabilities found.</p>
-    						    </j:otherwise>
-                          </j:choose>
-                    
+                        
+
+                    </div>
+
+                    <!-- Vulnerabilities Table -->
+                    <h2>Vulnerabilities</h2>
+                    <j:choose>
+                        <j:when test="${it.scanReportData().getVulnerabilities().size() > 0}">
+                        <div class="jenkins-table-container">
+                            <table class="jenkins-table">
+                                <thead>
+                                    <tr>
+                                        <th>Unique ID</th>
+                                        <th>Title</th>
+                                        <th>Severity</th>
+                                        <th>CVSS Score</th>
+                                        <th>Found On</th>
+                                        <th>Open Status</th>
+                                        <th>Found Date</th>
+                                        <th>Description</th>
+                                        <th>Solution</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <j:forEach var="vuln" items="${it.scanReportData().getVulnerabilities()}">
+                                        <tr>
+                                            <td>${vuln.getUniqueId()}</td>
+                                            <td>${vuln.getTitle()}</td>
+                                            <td>${vuln.getSeverity()}</td>
+                                            <td>${vuln.getCvssScore()}</td>
+                                            <td>${vuln.getFoundOn()}</td>
+                                            <td>${vuln.getOpenStatus()}</td>
+                                            <td>${vuln.getFoundDate()}</td>
+                                            <td>${vuln.getDescription()}</td>
+                                            <td>${vuln.getSolution()}</td>
+                                        </tr>
+                                    </j:forEach>
+                                </tbody>
+                            </table>
+                            </div>
+                        </j:when>
+                        <j:otherwise>
+                            <p>No vulnerabilities found.</p>
+                        </j:otherwise>
+                    </j:choose>
+
                 </j:when>
 
                 <!-- In Progress Status -->
                 <j:when test="${it.scanReportData().getJobStatus() == 'INPROGRESS'}">
-                    <div class="alert alert-info">
+                    <div class="jenkins-notice">
                         <h2>Scan In Progress</h2>
                         <p>Please wait while the scan is being processed.</p>
                     </div>
                 </j:when>
+
+                <!-- Error Status -->
                 <j:when test="${it.scanReportData().getJobStatus() == 'ERROR'}">
-                <div class="alert alert-warning">
+                    <div class="jenkins-error">
                         <h2>Scan Completed</h2>
-                        <p>Scan Completed Failed to fetch details. Please try After some time</p>
+                        <p>Scan completed, but failed to fetch details. Please try again later.</p>
                     </div>
                 </j:when>
 
-                <!-- Unknown or Not Available Status -->
+                <!-- Unknown Status -->
                 <j:otherwise>
-                    <div class="alert alert-warning">
+                    <div class="jenkins-error">
                         <p>Scan Status: Unknown or not available.</p>
                     </div>
                 </j:otherwise>

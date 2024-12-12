@@ -1,134 +1,114 @@
-/* Card Container */
-.card-container {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap; /* Ensure cards wrap for responsiveness */
-    margin-bottom: 16px;
-}
-
-/* Card Styles */
-.card {
-    flex: 0 0 48%; /* Adjust width of cards */
-    margin-bottom: 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* General Styling for Jenkins Panels */
+.jenkins-panel {
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
     background-color: #f9f9f9;
+    padding: 15px;
 }
 
-/* Card Header */
-.card-header {
-    font-size: 1.5em;
-    margin-bottom: 12px;
+.jenkins-panel__header {
+    font-size: 18px;
     font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
 }
 
-/* Card Body */
-.card-body {
-    padding: 8px 0;
+.jenkins-panel__body {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #555;
 }
 
-.card-body p {
-    margin: 4px 0;
-    font-size: 1em;
-}
-
-.card-body a {
-    color: #007bff;
-    text-decoration: none;
-}
-
-.card-body a:hover {
-    text-decoration: underline;
-}
-
-/* Responsiveness for Cards */
-@media (max-width: 768px) {
-    .card {
-        flex: 0 0 100%; /* Full width for cards on small screens */
-    }
-}
-
-/* Table Styles */
-.table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.table th:nth-child(4), .table td:nth-child(4) {
-    width: 250px; /* Set width for the fourth column */
-}
-
-.table {
-    table-layout: fixed;
-    width: 100%;
-}
-
-.fixed-width {
-    width: 200px;
-}
-
-/* Table Headers and Cells */
-.table th, .table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-}
-
-.table th {
-    background-color: #f2f2f2;
+/* Button Styling */
+.jenkins-button {
+    display: inline-block;
+    padding: 10px 15px;
+    font-size: 14px;
     font-weight: bold;
-}
-
-/* Alternating Table Row Colors */
-.table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.table tr:nth-child(odd) {
-    background-color: #ffffff;
-}
-
-/* Alert Styles */
-:root {
-    --alert-border-color: #ddd;
-    --alert-border-radius: 8px;
-    --alert-padding: 20px;
-}
-
-.alert {
-    padding: var(--alert-padding);
-    border: 1px solid var(--alert-border-color);
-    border-radius: var(--alert-border-radius);
-    margin-bottom: 16px;
-}
-
-.alert-info {
-    color: #31708f;
-    background-color: #d9edf7;
-    border-color: #bce8f1;
-}
-
-.alert-warning {
-    color: #8a6d3b;
-    background-color: #fcf8e3;
-    border-color: #faebcc;
-}
-
-/* Button Styles */
-button {
-    background-color: #4CAF50;
     color: white;
-    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #007bff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 }
 
-button:hover {
-    background-color: #45a049;
+.jenkins-button--primary {
+    background-color: #007bff;
 }
 
-button:focus {
-    outline: 3px solid #45a049; /* Focus outline for accessibility */
+/* Table Styling */
+.jenkins-table-container {
+    overflow-x: auto; /* Enables horizontal scrolling if needed */
+    margin-top: 10px;
+}
+
+.jenkins-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+.jenkins-table th,
+.jenkins-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    max-width: 200px; /* Prevents data from excessively stretching columns */
+    word-wrap: break-word; /* Ensures long text breaks onto a new line */
+    overflow: hidden; /* Prevents content overflow */
+    text-overflow: ellipsis; /* Adds ellipsis for overflowing text */
+}
+
+.jenkins-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.jenkins-notice {
+    font-size: 16px;
+    text-align: center;
+    color: #333;
+    background-color: #eef7ff;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.jenkins-error {
+    font-size: 16px;
+    text-align: center;
+    color: #721c24;
+    background-color: #f8d7da;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+/* Flex Container for Panels */
+.flex-container {
+    display: flex;
+    gap: 10px;
+}
+
+.flex-container > .jenkins-panel {
+    flex: 1;
+    margin-right: 10px;
+}
+
+/* Responsive Adjustments for Smaller Screens */
+@media screen and (max-width: 768px) {
+    .flex-container {
+        flex-direction: column; /* Stack panels vertically on smaller screens */
+    }
+
+    .jenkins-table th,
+    .jenkins-table td {
+        font-size: 12px; /* Adjust font size for better fit */
+    }
+
+    .jenkins-button {
+        font-size: 12px; /* Smaller button size */
+        padding: 8px 10px;
+    }
 }

@@ -11,7 +11,7 @@
 
   <groupId>io.jenkins.plugins</groupId>
   <artifactId>indusface-was</artifactId>
-  <version>1.0</version>
+  <version>1.0.0-SNAPSHOT</version>
 
   <packaging>hpi</packaging>
 
@@ -31,9 +31,6 @@
   </scm>
 
   <properties>
-    <revision>1.0</revision>
-    <changelist>-SNAPSHOT</changelist>
-
     <!--
 		https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
     <jenkins.version>2.462.3</jenkins.version>
