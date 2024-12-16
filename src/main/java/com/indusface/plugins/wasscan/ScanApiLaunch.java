@@ -15,7 +15,6 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.logging.Logger;
 import net.sf.json.JSONObject;
 
 /**
@@ -25,7 +24,6 @@ import net.sf.json.JSONObject;
  * scan results.
  */
 public class ScanApiLaunch {
-    private static final Logger logger = Logger.getLogger(ScanApiLaunch.class.getName());
 
     /**
      * Starts the scan process using the provided access key and updates the Jenkins
@@ -43,12 +41,7 @@ public class ScanApiLaunch {
         try {
             response = startScan(accessKey);
 
-            // Print the response status code and body
-            logger.info("Response Code: " + response.statusCode());
-            logger.info("Response Body: " + response.body());
-
             if (response.statusCode() != HttpURLConnection.HTTP_OK) {
-                logger.info("Scan start Failed .... " + response.body());
                 listener.getLogger().println("Scan start Failed .... " + response.body());
                 isBuildFailed = true;
                 return isBuildFailed;
@@ -98,7 +91,6 @@ public class ScanApiLaunch {
             }
         } catch (IOException | URISyntaxException e) {
             run.setResult(Result.FAILURE);
-            logger.info("I/O error occurred: " + e.getMessage());
             listener.getLogger().println("I/O error occurred . Jenkins Build  Failed.");
             isBuildFailed = true;
         }
@@ -113,7 +105,6 @@ public class ScanApiLaunch {
      */
     private String getScanLogId(String string) {
         JSONObject jsonObject = JSONObject.fromObject(string);
-        logger.info("jsonObject :" + jsonObject);
         // Retrieve the scanlogid from the result object
         return jsonObject.getJSONObject("result").getString("scanlogid");
     }
@@ -143,7 +134,6 @@ public class ScanApiLaunch {
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .POST(HttpRequest.BodyPublishers.ofString(secretKey))
                 .build();
-        logger.info("Invoked Start scan API");
         // Send the request and get the response
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }

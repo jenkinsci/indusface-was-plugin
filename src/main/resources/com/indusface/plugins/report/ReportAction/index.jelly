@@ -5,25 +5,26 @@
         <j:set var="scanData" value="${it.scanReportData()}" />
         <l:main-panel>
             <j:choose>
+            	
                 <j:when test="${scanData.getJobStatus() == 'COMPLETED'}">
 
                     <!-- Download Report Section -->
-                    <div class="jenkins-panel iws-jenkins-panel">
-                        <h2><div class="jenkins-panel__header iws-jenkins-panel__header">Download Report</div></h2>
-                        <div class="jenkins-panel__body iws-jenkins-panel__body">
-                            <a href="${scanData.getScanReportUrl()}" target="_blank" download="ScanReport.pdf">
-                                <button class="jenkins-button jenkins-button--primary iws-jenkins-button iws-jenkins-button--primary">Download Report</button>
+                    <div class="iws-jenkins-panel">
+                        <h2><div class="iws-jenkins-panel__header">Download Report</div></h2>
+                        <div class="iws-jenkins-panel__body">
+                            <a href="${scanData.getScanReportUrl()}" target="_blank" download="ScanReport.pdf" class="jenkins-button jenkins-button--primary">
+                                Download Report
                             </a>
                         </div>
                     </div>
 
                     <!-- Side-by-Side Information Section -->
-                    <div class="flex-container iws-flex-container">
+                    <div class="iws-flex-container">
 
                         <!-- General Information Section -->
-                        <div class="jenkins-panel iws-jenkins-panel">
-                            <h2><div class="jenkins-panel__header iws-jenkins-panel__header">General Information</div></h2>
-                            <div class="jenkins-panel__body iws-jenkins-panel__body">
+                        <div class="iws-jenkins-panel">
+                            <h2><div class="iws-jenkins-panel__header">General Information</div></h2>
+                            <div class="iws-jenkins-panel__body">
                                 <p><b>Scan Log ID:</b> ${scanData.getScanLogId()}</p>
                                 <p><b>Scan Status:</b> ${scanData.getScanStatus()}</p>
                                 <p><b>Build Status:</b> ${scanData.getBuildStatus()}</p>
@@ -35,9 +36,9 @@
                         </div>
 
                         <!-- Severity-wise Vulnerabilities Section -->
-                        <div class="jenkins-panel iws-jenkins-panel">
-                            <h2><div class="jenkins-panel__header iws-jenkins-panel__header">Severity-wise Vulnerabilities</div></h2>
-                            <div class="jenkins-panel__body iws-jenkins-panel__body">
+                        <div class="iws-jenkins-panel">
+                            <h2><div class="iws-jenkins-panel__header">Severity-wise Vulnerabilities</div></h2>
+                            <div class="iws-jenkins-panel__body">
                                 <p><b>Critical:</b> ${scanData.getSeverityWiseVulns().getCritical()}</p>
                                 <p><b>High:</b> ${scanData.getSeverityWiseVulns().getHigh()}</p>
                                 <p><b>Medium:</b> ${scanData.getSeverityWiseVulns().getMedium()}</p>
@@ -47,13 +48,13 @@
                         </div>
                         
                         <!-- Build Status Configuration Card -->
-						<div class="jenkins-panel iws-jenkins-panel">
-						   <h2> <div class="jenkins-panel__header iws-jenkins-panel__header">Build Status Configuration</div></h2>
-						    <div class="jenkins-panel__body iws-jenkins-panel__body">
+						<div class="iws-jenkins-panel">
+						   <h2> <div class="iws-jenkins-panel__header">Build Status Configuration</div></h2>
+						    <div class="iws-jenkins-panel__body">
 						        <j:choose>
 						            <j:when test="${scanData.getBuildStatusConfig().size() > 0}">
 						                <j:forEach var="buildConfig" items="${scanData.getBuildStatusConfig()}">
-						                    <div class="jenkins-card iws-jenkins-card">
+						                    <div class="iws-jenkins-card">
 						                        <p><b>Severity:</b> ${buildConfig.getSeverity()}</p>
 						                        <p><b>Vulnerabilities Found:</b> ${buildConfig.getFoundVulns()}</p>
 						                        <p><b>Threshold Limit:</b> ${buildConfig.getThresholdLimit()}</p>
@@ -62,7 +63,7 @@
 						                </j:forEach>
 						            </j:when>
 						            <j:otherwise>
-						                <p class="jenkins-notice iws-jenkins-notice">Build Status not found.</p>
+						                <div class="jenkins-alert jenkins-alert-warning">Build Status not found.</div>
 						            </j:otherwise>
 						        </j:choose>
 						    </div>
@@ -71,10 +72,10 @@
                     </div>
 
                     <!-- Vulnerabilities Table -->
-                    <h2 class="iws-heading">Vulnerabilities</h2>
+                    <h2 class="iws-heading jenkins-!-margin-top-2">Vulnerabilities</h2>
                     <j:choose>
                         <j:when test="${scanData.getVulnerabilities().size() > 0}">
-                        <div class="jenkins-table-container iws-jenkins-table-container">
+                        <div class="iws-jenkins-table-container">
                             <table class="jenkins-table iws-jenkins-table">
                                 <thead>
                                     <tr>
@@ -116,24 +117,24 @@
 
                 <!-- In Progress Status -->
                 <j:when test="${scanData.getJobStatus() == 'INPROGRESS'}">
-                    <div class="jenkins-notice iws-jenkins-notice">
+                    <div class="jenkins-alert jenkins-alert-info">
                         <h2>Scan In Progress</h2>
-                        <p>Please wait while the scan is being processed.</p>
+                        Please wait while the scan is being processed.
                     </div>
                 </j:when>
 
                 <!-- Error Status -->
                 <j:when test="${scanData.getJobStatus() == 'ERROR'}">
-                    <div class="jenkins-error iws-jenkins-error">
+                    <div class="jenkins-alert jenkins-alert-danger">
                         <h2>Scan Completed</h2>
-                        <p>Scan completed, but failed to fetch details. Please try again later.</p>
+                        Failed to fetch details. Please try again later.
                     </div>
                 </j:when>
 
                 <!-- Unknown Status -->
                 <j:otherwise>
-                    <div class="jenkins-error iws-jenkins-error">
-                        <p>Scan Status: Unknown or not available.</p>
+                    <div class="jenkins-alert jenkins-alert-danger">
+                        Scan Status: Unknown or not available.
                     </div>
                 </j:otherwise>
             </j:choose>

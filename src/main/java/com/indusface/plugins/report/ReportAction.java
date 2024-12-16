@@ -5,14 +5,15 @@ import com.indusface.plugins.wasscan.ScanAndBuildStatus;
 import com.indusface.plugins.wasscan.ScanApiResponse;
 import hudson.model.Action;
 import hudson.model.Run;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -29,8 +30,6 @@ public class ReportAction implements Action {
     // Get the singleton HttpClient instance from HttpClientProvider
     private static final HttpClient client = HttpClientProvider.getHttpClient();
 
-    private static final Logger logger = Logger.getLogger(ReportAction.class.getName());
-
     /**
      * Constructor to initialize the ReportAction with the specified Jenkins build.
      *
@@ -45,18 +44,10 @@ public class ReportAction implements Action {
      *
      * @return the scan status as a ScanApiResponse object
      */
-    public ScanApiResponse getScanStatus() {
+    public ScanApiResponse getScanStatus() throws Exception {
         ScanAndBuildStatus action = run.getAction(ScanAndBuildStatus.class);
-        String scanId = action.getScanId();
-        String secretKey = action.getSecretKey();
-        ScanApiResponse status = new ScanApiResponse();
+        ScanApiResponse status = callGetStatusAPI(action.getScanId(), action.getSecretKey());
 
-        try {
-            status = callGetStatusAPI(scanId, secretKey);
-
-        } catch (Exception e) {
-            logger.info("Exception occurred getScanStatus:" + e.getLocalizedMessage());
-        }
         return status;
     }
 
@@ -81,13 +72,17 @@ public class ReportAction implements Action {
             sr.setJobStatus(jobStatus);
             if (jobStatus.equals(BuildStatus.COMPLETED.toString())) {
                 String apiUrl = String.format(SCAN_REPORT_API, scanId);
-                logger.info("apiUrl for scan Report: " + apiUrl);
                 String jsonBody = createJsonBody(secretKey);
-                HttpRequest request = HttpRequest.newBuilder()
+                HttpRequest request;
+
+                request = HttpRequest.newBuilder()
                         .uri(new URI(apiUrl))
                         .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                         .build();
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                HttpResponse<String> response = null;
+
+                response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
                 if (response.statusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -97,13 +92,10 @@ public class ReportAction implements Action {
 
                 } else {
                     sr.setJobStatus("ERROR");
-                    logger.info("Failed to fetch scan data. HTTP Status: " + response.statusCode());
                 }
             }
-
-        } catch (Exception e) {
+        } catch (URISyntaxException | IOException | InterruptedException e) {
             sr.setJobStatus("ERROR");
-            logger.info("Failed to fetch scan report. " + e.getMessage());
         }
 
         return sr;
@@ -130,15 +122,11 @@ public class ReportAction implements Action {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == HttpURLConnection.HTTP_OK) {
             JSONObject jsonObject = JSONObject.fromObject(response.body());
-            logger.info("jsonObject :" + jsonObject);
             scanStatus = jsonObject.getJSONObject("result").get("scanStatus").toString();
             buildStatus = jsonObject.getJSONObject("result").get("buildStatus").toString();
             scanApiResponse.setBuildStatus(buildStatus);
             scanApiResponse.setScanStatus(scanStatus);
-        } else {
-            logger.info("Failed to get scan Status Response: " + response.body());
         }
-
         return scanApiResponse;
     }
 

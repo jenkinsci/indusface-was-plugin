@@ -1,9 +1,8 @@
 /* General Styling for Jenkins Panels */
 .iws-jenkins-panel {
     margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: inherit;  /* Inherit background color from the theme */
+    border: 1px solid var(--text-color-secondary);
+    border-radius: 10px;
     padding: 15px;
 }
 
@@ -11,79 +10,20 @@
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 10px;
-    color: currentColor; /* Use currentColor for text to adapt to the theme */
 }
 
 .iws-jenkins-panel__body {
     font-size: 14px;
     line-height: 1.5;
-    color: currentColor; /* Use currentColor for text to adapt to the theme */
-}
-
-/* Button Styling */
-.iws-jenkins-button {
-    display: inline-block;
-    padding: 10px 15px;
-    font-size: 14px;
-    font-weight: bold;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    background-color: inherit;  /* Will inherit background color from theme */
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.iws-jenkins-button--primary {
-    background-color: inherit; /* Primary button will adapt based on theme */
 }
 
 /* Table Styling */
 .iws-jenkins-table-container {
     overflow-x: auto; /* Enables horizontal scrolling if needed */
-    margin-top: 10px;
 }
 
 .iws-jenkins-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0 auto;
-}
-
-.iws-jenkins-table th,
-.iws-jenkins-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    max-width: 200px; /* Prevents data from excessively stretching columns */
-    word-wrap: break-word; /* Ensures long text breaks onto a new line */
-    overflow: hidden; /* Prevents content overflow */
-    text-overflow: ellipsis; /* Adds ellipsis for overflowing text */
-}
-
-.iws-jenkins-table th {
-    background-color: inherit; /* Header color will inherit from the theme */
-    font-weight: bold;
-}
-
-/* Notification and Error Styling */
-.iws-jenkins-notice {
-    font-size: 16px;
-    text-align: center;
-    color: currentColor;
-    background-color: inherit;  /* Background will adapt to theme */
-    padding: 15px;
-    border-radius: 5px;
-}
-
-.iws-jenkins-error {
-    font-size: 16px;
-    text-align: center;
-    color: currentColor;
-    background-color: inherit; /* Error background will adapt to theme */
-    padding: 15px;
-    border-radius: 5px;
+    border-spacing: 2px;
 }
 
 /* Flex Container for Panels */
@@ -94,12 +34,11 @@
 
 .iws-flex-container > .iws-jenkins-panel {
     flex: 1;
-    margin-right: 10px;
 }
 
 .iws-jenkins-card {
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border: 1px solid var(--text-color-secondary);
+    border-radius: 10px;
     padding: 15px;
     margin-bottom: 15px;
     transition: background-color 0.3s, box-shadow 0.3s;
@@ -121,10 +60,6 @@
         font-size: 12px; /* Adjust font size for better fit */
     }
 
-    .iws-jenkins-button {
-        font-size: 12px; /* Smaller button size */
-        padding: 8px 10px;
-    }
     .iws-jenkins-card {
         padding: 10px; /* Adjust card padding */
     }
