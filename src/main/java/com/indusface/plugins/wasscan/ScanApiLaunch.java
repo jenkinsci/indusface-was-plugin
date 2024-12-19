@@ -42,7 +42,7 @@ public class ScanApiLaunch {
             response = startScan(accessKey);
 
             if (response.statusCode() != HttpURLConnection.HTTP_OK) {
-                listener.getLogger().println("Scan start Failed .... " + response.body());
+                listener.getLogger().println("Scan start Failed .... ");
                 isBuildFailed = true;
                 return isBuildFailed;
             }

@@ -98,7 +98,6 @@ public class WasPostBuildAction extends Notifier implements SimpleBuildStep {
             Result result = run.getResult();
             if (result != null && result.equals(Result.SUCCESS)) {
                 listener.getLogger().println("Build was successful! Executing post-build action...");
-                listener.getLogger().println("Access Key: " + accessKey);
                 ScanApiLaunch sc = new ScanApiLaunch();
                 boolean isBuildFail = sc.startScan(listener, Secret.toString(accessKey), run);
                 if (isBuildFail) {
@@ -171,7 +170,7 @@ public class WasPostBuildAction extends Notifier implements SimpleBuildStep {
     /**
      * Descriptor for the WasPostBuildAction.
      */
-    @Symbol("wasPostBuildAction")
+    @Symbol("indusfaceWasScan")
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
@@ -200,7 +199,7 @@ public class WasPostBuildAction extends Notifier implements SimpleBuildStep {
          */
         @Override
         public String getDisplayName() {
-            return "WAS-Post-build-action";
+            return "Indusface-Was-Scan";
         }
     }
 }

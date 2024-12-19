@@ -19,7 +19,7 @@ Download and install the plugin from the Jenkins Update Center.
 Enable the plugin in your Jenkins job's **Post-build Actions**. You can either create a new job or modify an existing one.
 
 ### 3. Enable the Plugin
-In the **Post-build Actions** section, select the **WAF Scan Plugin**.
+In the **Post-build Actions** section, select the **Indusface-Was-Scan**.
 
 ### 4. Provide Application Details
 Enter the web application name and access key required for scanning.
