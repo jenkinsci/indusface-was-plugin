@@ -199,7 +199,7 @@ public class WasPostBuildAction extends Notifier implements SimpleBuildStep {
          */
         @Override
         public String getDisplayName() {
-            return "Indusface-Was-Scan";
+            return "Indusface Was Scan";
         }
     }
 }

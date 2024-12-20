@@ -1,9 +1,6 @@
 package com.indusface.plugins.wasscan;
 
-import static com.indusface.plugins.httpclient.HttpClientProvider.getHttpClient;
-import static com.indusface.plugins.report.ReportAction.createJsonBody;
-
-import com.indusface.plugins.entity.StartScanResponse;
+import com.indusface.plugins.httpclient.HttpClientProvider;
 import com.indusface.plugins.report.BuildStatus;
 import com.indusface.plugins.report.ReportAction;
 import com.indusface.plugins.report.ServiceUrls;
@@ -12,16 +9,13 @@ import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.ParseException;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.io.entity.StringEntity;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import net.sf.json.JSONObject;
 
 /**
  * The ScanApiLaunch class is responsible for initiating and monitoring a scan
@@ -43,19 +37,20 @@ public class ScanApiLaunch {
     public boolean startScan(TaskListener listener, String accessKey, Run<?, ?> run) throws InterruptedException {
         String scanlogid = null;
         boolean isBuildFailed = false;
-        StartScanResponse response = null;
+        HttpResponse<String> response = null;
         try {
             response = startScan(accessKey);
 
-            if (!response.isSuccess()) {
+            if (response.statusCode() != HttpURLConnection.HTTP_OK) {
                 listener.getLogger().println("Scan start Failed .... ");
                 isBuildFailed = true;
                 return isBuildFailed;
             }
 
             listener.getLogger().println("Scan Started ");
-            scanlogid = response.getScanLogId();
+            scanlogid = getScanLogId(response.body());
             run.addAction(new ScanAndBuildStatus(scanlogid, accessKey, BuildStatus.INPROGRESS.toString()));
+            listener.getLogger().println("Scan Logid :" + scanlogid);
             ReportAction action = new ReportAction(run);
             run.addAction(action);
             boolean isScanRunning = true;
@@ -89,7 +84,6 @@ public class ScanApiLaunch {
                     ScanAndBuildStatus statusDetail = run.getAction(ScanAndBuildStatus.class);
                     if (statusDetail != null
                             && statusDetail.getBuildStatus().equals(BuildStatus.INPROGRESS.toString())) {
-                        System.out.println();
                         statusDetail.setBuildStatus(BuildStatus.UNAVAILABLE.toString());
                     }
                     return isBuildFailed;
@@ -104,33 +98,44 @@ public class ScanApiLaunch {
     }
 
     /**
+     * Extracts the scan log ID from the API response.
+     *
+     * @param string the HTTP response from the scan API
+     * @return the scan log ID
+     */
+    private String getScanLogId(String string) {
+        JSONObject jsonObject = JSONObject.fromObject(string);
+        // Retrieve the scanlogid from the result object
+        return jsonObject.getJSONObject("result").getString("scanlogid");
+    }
+
+    /**
      * Initiates the scan by sending a POST request to the scan API with the
      * provided access key.
      *
      * @param accessKey the access key required for the scan
      * @return the HTTP response from the scan API
-     * @throws URISyntaxException if the URI syntax is incorrect
-     * @throws IOException        if an I/O error occurs
+     * @throws URISyntaxException   if the URI syntax is incorrect
+     * @throws IOException          if an I/O error occurs
+     * @throws InterruptedException if the request is interrupted
      */
-    private StartScanResponse startScan(String accessKey) throws URISyntaxException, IOException {
+    private HttpResponse<String> startScan(String accessKey)
+            throws URISyntaxException, IOException, InterruptedException {
+        HttpClient client = HttpClientProvider.getHttpClient();
+
         String scan_start_api = ServiceUrls.SCAN_START_API;
         URI scanUri = new URI(scan_start_api);
 
-        String jsonBody = createJsonBody(accessKey);
+        String secretKey = "secret_key=" + accessKey;
 
-        try (CloseableHttpClient client = getHttpClient()) {
-            HttpUriRequestBase request = new HttpPost(scanUri);
-            request.setHeader("Accept", "application/x-www-form-urlencoded");
-            request.setEntity(new StringEntity(jsonBody, ContentType.APPLICATION_JSON));
-            try (CloseableHttpResponse response = client.execute(request)) {
-                System.out.println("Response Code: " + response.getCode());
-                return new StartScanResponse(response.getCode(), EntityUtils.toString(response.getEntity()));
-            } catch (ParseException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        return new StartScanResponse();
+        // Create a POST request
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(scanUri)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(secretKey))
+                .build();
+        // Send the request and get the response
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     public static boolean monitorAndAbortIfCancelled(Run<?, ?> build, TaskListener listener)

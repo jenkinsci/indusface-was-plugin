@@ -1,25 +1,21 @@
 package com.indusface.plugins.report;
 
-import static com.indusface.plugins.httpclient.HttpClientProvider.getHttpClient;
-import static com.indusface.plugins.httpclient.HttpClientProvider.parseResponse;
-
+import com.indusface.plugins.httpclient.HttpClientProvider;
 import com.indusface.plugins.wasscan.ScanAndBuildStatus;
 import com.indusface.plugins.wasscan.ScanApiResponse;
 import hudson.model.Action;
 import hudson.model.Run;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.ParseException;
-import org.apache.hc.core5.http.io.entity.StringEntity;
 
 /**
  * The ReportAction class is responsible for fetching and parsing scan reports
@@ -31,6 +27,8 @@ public class ReportAction implements Action {
 
     private static final String SCAN_STATUS_API = ServiceUrls.SCAN_STATUS_API;
     private static final String SCAN_REPORT_API = ServiceUrls.SCAN_REPORT_API;
+    // Get the singleton HttpClient instance from HttpClientProvider
+    private static final HttpClient client = HttpClientProvider.getHttpClient();
 
     /**
      * Constructor to initialize the ReportAction with the specified Jenkins build.
@@ -61,39 +59,45 @@ public class ReportAction implements Action {
     public ScanReport scanReportData() {
         ScanReport sr = new ScanReport();
 
-        ScanAndBuildStatus action = run.getAction(ScanAndBuildStatus.class);
+        try {
+            ScanAndBuildStatus action = run.getAction(ScanAndBuildStatus.class);
 
-        if (action == null) {
-            throw new IllegalArgumentException("ScanId and access key  is missing from the build.");
-        }
-
-        String scanId = action.getScanId();
-        String secretKey = action.getSecretKey();
-        String jobStatus = action.getBuildStatus();
-        sr.setJobStatus(jobStatus);
-        if (jobStatus.equals(BuildStatus.COMPLETED.toString())) {
-            String apiUrl = String.format(SCAN_REPORT_API, scanId);
-            String jsonBody = createJsonBody(secretKey);
-
-            try (CloseableHttpClient client = getHttpClient()) {
-                HttpUriRequestBase request = new HttpPost(apiUrl);
-                request.setEntity(new StringEntity(jsonBody, ContentType.APPLICATION_JSON));
-                try (CloseableHttpResponse response = client.execute(request)) {
-                    if (response.getCode() == HttpURLConnection.HTTP_OK) {
-                        JSONObject jsonObject = parseResponse(response.getEntity());
-                        sr = parseScanData(jsonObject);
-                        sr.setJobStatus(jobStatus);
-                    } else {
-                        sr.setJobStatus("ERROR");
-                    }
-                } catch (ParseException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                sr = null;
+            if (action == null) {
+                throw new IllegalArgumentException("ScanId and access key  is missing from the build.");
             }
+
+            String scanId = action.getScanId();
+            String secretKey = action.getSecretKey();
+            String jobStatus = action.getBuildStatus();
+            sr.setJobStatus(jobStatus);
+            if (jobStatus.equals(BuildStatus.COMPLETED.toString())) {
+                String apiUrl = String.format(SCAN_REPORT_API, scanId);
+                String jsonBody = createJsonBody(secretKey);
+                HttpRequest request;
+
+                request = HttpRequest.newBuilder()
+                        .uri(new URI(apiUrl))
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .build();
+
+                HttpResponse<String> response = null;
+
+                response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+
+                    JSONObject jsonObject = JSONObject.fromObject(response.body());
+                    sr = parseScanData(jsonObject);
+                    sr.setJobStatus(jobStatus);
+
+                } else {
+                    sr.setJobStatus("ERROR");
+                }
+            }
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            sr = null;
         }
+
         return sr;
     }
 
@@ -111,27 +115,22 @@ public class ReportAction implements Action {
         String buildStatus = null;
         String apiUrl = String.format(SCAN_STATUS_API, scanlogid);
         String jsonBody = createJsonBody(secretKey);
-        try (CloseableHttpClient client = getHttpClient()) {
-            HttpUriRequestBase request = new HttpPost(apiUrl);
-            request.setEntity(new StringEntity(jsonBody, ContentType.APPLICATION_JSON));
-            try (CloseableHttpResponse response = client.execute(request)) {
-                if (response.getCode() == HttpURLConnection.HTTP_OK) {
-                    JSONObject jsonObject = parseResponse(response.getEntity());
-                    scanStatus =
-                            jsonObject.getJSONObject("result").get("scanStatus").toString();
-                    buildStatus = jsonObject
-                            .getJSONObject("result")
-                            .get("buildStatus")
-                            .toString();
-                    scanApiResponse.setBuildStatus(buildStatus);
-                    scanApiResponse.setScanStatus(scanStatus);
-                }
-            }
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(apiUrl))
+                .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+            JSONObject jsonObject = JSONObject.fromObject(response.body());
+            scanStatus = jsonObject.getJSONObject("result").get("scanStatus").toString();
+            buildStatus = jsonObject.getJSONObject("result").get("buildStatus").toString();
+            scanApiResponse.setBuildStatus(buildStatus);
+            scanApiResponse.setScanStatus(scanStatus);
         }
         return scanApiResponse;
     }
 
-    public static String createJsonBody(String secretKey) {
+    private static String createJsonBody(String secretKey) {
         if (secretKey == null) {
             throw new IllegalStateException("SECRET_KEY is null");
         }
