@@ -3,7 +3,8 @@ package com.indusface.plugins.report;
 public enum BuildStatus {
     COMPLETED("COMPLETED"),
     ABORTED("ABORTED"),
-    INPROGRESS("INPROGRESS");
+    INPROGRESS("INPROGRESS"),
+    UNAVAILABLE("UNAVAILABLE");
 
     private final String description;
 

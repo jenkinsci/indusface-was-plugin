@@ -1,13 +1,21 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout">
+<j:set var="jobStatus" value="${it.getJobStatus()}" />
+
+<j:choose>
+    <j:when test="${jobStatus == 'COMPLETED'}">
+        <j:set var="scanData" value="${it.scanReportData()}" />
+    </j:when>
+</j:choose>
     <l:layout title="Scan Report">
         <st:adjunct includes="com.indusface.plugins.report.ReportAction.report-style" />
-        <j:set var="scanData" value="${it.scanReportData()}" />
+        
         <l:main-panel>
             <j:choose>
             	
-                <j:when test="${scanData.getJobStatus() == 'COMPLETED'}">
-
+                <j:when test="${jobStatus == 'COMPLETED'}">
+                <j:choose>
+					<j:when test="${scanData != null}">
                     <!-- Download Report Section -->
                     <div class="iws-jenkins-panel">
                         <h2><div class="iws-jenkins-panel__header">Download Report</div></h2>
@@ -112,25 +120,32 @@
                             <p>No vulnerabilities found.</p>
                         </j:otherwise>
                     </j:choose>
-
+					</j:when>
+					<j:otherwise>
+                                        <div class="jenkins-alert jenkins-alert-danger">
+                        <h2>Scan Completed</h2>
+                        Service Un Available .Failed to fetch details. Please try again later.
+                        
+                    </div>
+                </j:otherwise>
+					
+					</j:choose>
                 </j:when>
 
                 <!-- In Progress Status -->
-                <j:when test="${scanData.getJobStatus() == 'INPROGRESS'}">
+                <j:when test="${jobStatus == 'INPROGRESS'}">
                     <div class="jenkins-alert jenkins-alert-info">
                         <h2>Scan In Progress</h2>
                         Please wait while the scan is being processed.
                     </div>
                 </j:when>
 
-                <!-- Error Status -->
-                <j:when test="${scanData.getJobStatus() == 'ERROR'}">
+				<j:when test="${jobStatus == 'UNAVAILABLE'}">
                     <div class="jenkins-alert jenkins-alert-danger">
-                        <h2>Scan Completed</h2>
-                        Failed to fetch details. Please try again later.
+                        <h2>Service Un Available</h2>
+                        Failed to Fetch Scan Status .
                     </div>
                 </j:when>
-
                 <!-- Unknown Status -->
                 <j:otherwise>
                     <div class="jenkins-alert jenkins-alert-danger">
