@@ -13,7 +13,7 @@ The Indusface WAS Scan Plugin enhances your Jenkins pipelines with automated sec
 ## Quick Start
 
 ### 1. Install the Plugin
-Download and install the plugin from the Jenkins Update Center.
+Download and install the Indusface-WAS-Plugin plugin from the Jenkins Update Center.
 
 ### 2. Configure the Jenkins Job
 Enable the plugin in your Jenkins job's **Post-build Actions**. You can either create a new job or modify an existing one.
