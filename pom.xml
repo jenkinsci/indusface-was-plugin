@@ -36,7 +36,7 @@
     <gitHubRepo>jenkinsci/indusface-was-plugin</gitHubRepo>
     <!--
 		https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
-    <jenkins.version>2.462.3</jenkins.version>
+    <jenkins.version>2.462.1</jenkins.version>
 
     <spotless.check.skip>false</spotless.check.skip>
   </properties>
